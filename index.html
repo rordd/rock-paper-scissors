@@ -6,23 +6,177 @@
 <title>✊✌️✋ 가위바위보</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-primary: #0f0c29;
+    --bg-secondary: #302b63;
+    --bg-tertiary: #24243e;
+    --text-primary: #fff;
+    --text-secondary: #aaa;
+    --text-muted: #666;
+    --btn-bg: rgba(255,255,255,0.1);
+    --btn-border: rgba(255,255,255,0.2);
+    --btn-hover-bg: rgba(255,255,255,0.2);
+    --btn-hover-border: rgba(255,255,255,0.5);
+    --toggle-bg: rgba(255,255,255,0.1);
+    --toggle-border: rgba(255,255,255,0.2);
+    --stats-bg: rgba(255,255,255,0.05);
+    --bar-bg: rgba(255,255,255,0.1);
+  }
+
+  html.light {
+    --bg-primary: #e8e8e8;
+    --bg-secondary: #d0d0e0;
+    --bg-tertiary: #c8c8d8;
+    --text-primary: #1a1a2e;
+    --text-secondary: #555;
+    --text-muted: #888;
+    --btn-bg: rgba(0,0,0,0.06);
+    --btn-border: rgba(0,0,0,0.15);
+    --btn-hover-bg: rgba(0,0,0,0.12);
+    --btn-hover-border: rgba(0,0,0,0.4);
+    --toggle-bg: rgba(0,0,0,0.06);
+    --toggle-border: rgba(0,0,0,0.15);
+    --stats-bg: rgba(0,0,0,0.04);
+    --bar-bg: rgba(0,0,0,0.08);
+  }
+
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-    color: #fff;
+    background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary), var(--bg-tertiary));
+    color: var(--text-primary);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     user-select: none;
+    transition: background 0.4s, color 0.4s;
+    padding: 1rem;
   }
+
+  /* Top Controls */
+  .top-controls {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 100;
+  }
+  .top-controls button {
+    background: var(--toggle-bg);
+    border: 1px solid var(--toggle-border);
+    color: var(--text-primary);
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .top-controls button:hover {
+    background: var(--btn-hover-bg);
+    border-color: var(--btn-hover-border);
+  }
+
   h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-  .subtitle { color: #aaa; margin-bottom: 2rem; font-size: 1rem; }
+  .subtitle { color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 1rem; }
+
+  /* Mode Toggle */
+  .mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+  .switch {
+    position: relative;
+    width: 48px;
+    height: 26px;
+    cursor: pointer;
+  }
+  .switch input { display: none; }
+  .slider {
+    position: absolute;
+    inset: 0;
+    background: var(--bar-bg);
+    border-radius: 13px;
+    transition: background 0.3s;
+  }
+  .slider::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 3px;
+    top: 3px;
+    background: var(--text-secondary);
+    border-radius: 50%;
+    transition: all 0.3s;
+  }
+  .switch input:checked + .slider { background: #6366f1; }
+  .switch input:checked + .slider::before {
+    transform: translateX(22px);
+    background: #fff;
+  }
+
+  /* Set Progress */
+  .set-progress {
+    display: none;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+  .set-progress.active { display: flex; }
+  .set-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--text-muted);
+    transition: all 0.3s;
+  }
+  .set-dot.win { background: #4ade80; border-color: #4ade80; }
+  .set-dot.lose { background: #f87171; border-color: #f87171; }
+  .set-dot.draw { background: #fbbf24; border-color: #fbbf24; }
+
   .score-board {
-    display: flex; gap: 3rem; margin-bottom: 2rem; font-size: 1.2rem;
+    display: flex; gap: 3rem; margin-bottom: 1.5rem; font-size: 1.2rem;
   }
   .score-board span { font-weight: bold; font-size: 1.8rem; }
+
+  /* Stats */
+  .stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .stat-bar {
+    width: 60px; height: 6px;
+    background: var(--bar-bg);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .stat-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .stat-fill.win-fill { background: #4ade80; }
+  .stat-fill.lose-fill { background: #f87171; }
+  .stat-fill.draw-fill { background: #fbbf24; }
+
   .arena {
     display: flex; gap: 2rem; align-items: center; margin-bottom: 2rem;
     min-height: 120px;
@@ -31,15 +185,13 @@
     font-size: 5rem; transition: transform 0.3s;
     min-width: 100px; text-align: center;
   }
-  .pick.shake {
-    animation: shake 0.4s ease-in-out;
-  }
+  .pick.shake { animation: shake 0.4s ease-in-out; }
   @keyframes shake {
     0%, 100% { transform: rotate(0deg); }
     25% { transform: rotate(-15deg); }
     75% { transform: rotate(15deg); }
   }
-  .vs { font-size: 1.5rem; color: #888; font-weight: bold; }
+  .vs { font-size: 1.5rem; color: var(--text-muted); font-weight: bold; }
   .result {
     font-size: 1.8rem; font-weight: bold; min-height: 2.5rem;
     margin-bottom: 2rem;
@@ -47,41 +199,138 @@
   .result.win { color: #4ade80; }
   .result.lose { color: #f87171; }
   .result.draw { color: #fbbf24; }
-  .choices {
-    display: flex; gap: 1.5rem;
-  }
+  .choices { display: flex; gap: 1.5rem; }
   .choices button {
-    font-size: 3.5rem; background: rgba(255,255,255,0.1);
-    border: 2px solid rgba(255,255,255,0.2);
+    font-size: 3.5rem; background: var(--btn-bg);
+    border: 2px solid var(--btn-border);
     border-radius: 1rem; padding: 1rem 1.5rem;
     cursor: pointer; transition: all 0.2s;
   }
   .choices button:hover {
-    background: rgba(255,255,255,0.2);
-    border-color: rgba(255,255,255,0.5);
+    background: var(--btn-hover-bg);
+    border-color: var(--btn-hover-border);
     transform: scale(1.1);
   }
   .choices button:active { transform: scale(0.95); }
+  .choices button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+  }
   .reset {
-    margin-top: 2rem; background: none; border: 1px solid #666;
-    color: #999; padding: 0.5rem 1.5rem; border-radius: 0.5rem;
+    margin-top: 2rem; background: none; border: 1px solid var(--text-muted);
+    color: var(--text-secondary); padding: 0.5rem 1.5rem; border-radius: 0.5rem;
     cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
   }
-  .reset:hover { border-color: #fff; color: #fff; }
+  .reset:hover { border-color: var(--text-primary); color: var(--text-primary); }
   .history {
-    margin-top: 1.5rem; color: #666; font-size: 0.9rem;
+    margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem;
     letter-spacing: 0.3rem;
+  }
+
+  /* Confetti */
+  .confetti-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 999;
+    overflow: hidden;
+  }
+  .confetti-piece {
+    position: absolute;
+    top: -20px;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+  }
+  .confetti-piece.active {
+    animation: confetti-fall 1.8s ease-in forwards;
+  }
+  @keyframes confetti-fall {
+    0% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+    100% { opacity: 0; transform: translateY(100vh) rotate(720deg) scale(0.3); }
+  }
+
+  /* Set Winner Overlay */
+  .set-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+  }
+  .set-overlay.active { display: flex; }
+  .set-overlay-content {
+    text-align: center;
+    animation: pop-in 0.4s ease;
+  }
+  .set-overlay-content h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+  .set-overlay-content p { font-size: 1.2rem; color: #ccc; margin-bottom: 1.5rem; }
+  .set-overlay-content button {
+    background: #6366f1; border: none; color: #fff;
+    padding: 0.7rem 2rem; border-radius: 0.5rem;
+    font-size: 1rem; cursor: pointer; transition: background 0.2s;
+  }
+  .set-overlay-content button:hover { background: #4f46e5; }
+  @keyframes pop-in {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
   }
 </style>
 </head>
 <body>
 
+<div class="top-controls">
+  <button onclick="toggleSound()" id="sound-btn" title="효과음">🔊</button>
+  <button onclick="toggleTheme()" id="theme-btn" title="테마 변경">☀️</button>
+</div>
+
 <h1>가위바위보</h1>
 <p class="subtitle">골라봐. 이길 수 있으면 🃏</p>
+
+<div class="mode-toggle">
+  <span>일반</span>
+  <label class="switch">
+    <input type="checkbox" id="set-mode-toggle" onchange="toggleSetMode()">
+    <span class="slider"></span>
+  </label>
+  <span>5판 3선승</span>
+</div>
+
+<div class="set-progress" id="set-progress">
+  <span>라운드:</span>
+  <div class="set-dot" id="dot-0"></div>
+  <div class="set-dot" id="dot-1"></div>
+  <div class="set-dot" id="dot-2"></div>
+  <div class="set-dot" id="dot-3"></div>
+  <div class="set-dot" id="dot-4"></div>
+</div>
 
 <div class="score-board">
   <div>나 <span id="my-score">0</span></div>
   <div>엘리스 <span id="ai-score">0</span></div>
+</div>
+
+<div class="stats">
+  <div class="stat-item">
+    <span id="win-pct">0%</span>
+    <div class="stat-bar"><div class="stat-fill win-fill" id="win-bar"></div></div>
+    <span>승</span>
+  </div>
+  <div class="stat-item">
+    <span id="draw-pct">0%</span>
+    <div class="stat-bar"><div class="stat-fill draw-fill" id="draw-bar"></div></div>
+    <span>무</span>
+  </div>
+  <div class="stat-item">
+    <span id="lose-pct">0%</span>
+    <div class="stat-bar"><div class="stat-fill lose-fill" id="lose-bar"></div></div>
+    <span>패</span>
+  </div>
 </div>
 
 <div class="arena">
@@ -92,7 +341,7 @@
 
 <div class="result" id="result">아래에서 선택해!</div>
 
-<div class="choices">
+<div class="choices" id="choices">
   <button onclick="play('scissors')" title="가위">✌️</button>
   <button onclick="play('rock')" title="바위">✊</button>
   <button onclick="play('paper')" title="보">✋</button>
@@ -100,6 +349,16 @@
 
 <button class="reset" onclick="resetGame()">초기화</button>
 <div class="history" id="history"></div>
+
+<div class="confetti-container" id="confetti"></div>
+
+<div class="set-overlay" id="set-overlay">
+  <div class="set-overlay-content">
+    <h2 id="set-winner-text"></h2>
+    <p id="set-score-text"></p>
+    <button onclick="startNewSet()">다시 하기</button>
+  </div>
+</div>
 
 <script>
 const emoji = { scissors: '✌️', rock: '✊', paper: '✋' };
@@ -109,6 +368,10 @@ const loseMsg = ['ㅋㅋ 너무 쉽다', '예측 완료 🃏', '내가 이길 �
 const drawMsg = ['무승부라니...', '똑같은 생각이었네', '다시!'];
 
 let myScore = 0, aiScore = 0, history = [];
+let totalWins = 0, totalLosses = 0, totalDraws = 0;
+let setMode = false, setRound = 0, setMyWins = 0, setAiWins = 0;
+let soundEnabled = true;
+let locked = false;
 
 function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
@@ -120,7 +383,160 @@ function getResult(me, ai) {
   return 'lose';
 }
 
+// --- Web Audio API ---
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playTone(freq, duration, type) {
+  if (!soundEnabled) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type || 'sine';
+  osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
+}
+
+function playWinSound() {
+  playTone(523, 0.12, 'square');
+  setTimeout(() => playTone(659, 0.12, 'square'), 100);
+  setTimeout(() => playTone(784, 0.3, 'square'), 200);
+}
+function playLoseSound() {
+  playTone(330, 0.15, 'sawtooth');
+  setTimeout(() => playTone(262, 0.4, 'sawtooth'), 150);
+}
+function playDrawSound() {
+  playTone(440, 0.3, 'triangle');
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  document.getElementById('sound-btn').textContent = soundEnabled ? '🔊' : '🔇';
+}
+
+// --- Theme ---
+function toggleTheme() {
+  const isLight = document.documentElement.classList.toggle('light');
+  document.getElementById('theme-btn').textContent = isLight ? '🌙' : '☀️';
+}
+
+// --- Confetti ---
+function launchConfetti() {
+  const container = document.getElementById('confetti');
+  const colors = ['#4ade80', '#6366f1', '#fbbf24', '#f87171', '#38bdf8', '#fb923c', '#e879f9'];
+  const fragment = document.createDocumentFragment();
+  for (let i = 0; i < 40; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.width = (6 + Math.random() * 8) + 'px';
+    piece.style.height = (6 + Math.random() * 8) + 'px';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    piece.style.animationDelay = (Math.random() * 0.6) + 's';
+    piece.style.animationDuration = (1.2 + Math.random() * 1) + 's';
+    fragment.appendChild(piece);
+  }
+  container.appendChild(fragment);
+  requestAnimationFrame(() => {
+    container.querySelectorAll('.confetti-piece:not(.active)').forEach(p => p.classList.add('active'));
+  });
+  setTimeout(() => { container.innerHTML = ''; }, 3000);
+}
+
+// --- Stats ---
+function updateStats() {
+  const total = totalWins + totalLosses + totalDraws;
+  if (total === 0) {
+    document.getElementById('win-pct').textContent = '0%';
+    document.getElementById('lose-pct').textContent = '0%';
+    document.getElementById('draw-pct').textContent = '0%';
+    document.getElementById('win-bar').style.width = '0%';
+    document.getElementById('lose-bar').style.width = '0%';
+    document.getElementById('draw-bar').style.width = '0%';
+    return;
+  }
+  const wp = Math.round(totalWins / total * 100);
+  const lp = Math.round(totalLosses / total * 100);
+  const dp = 100 - wp - lp;
+  document.getElementById('win-pct').textContent = wp + '%';
+  document.getElementById('lose-pct').textContent = lp + '%';
+  document.getElementById('draw-pct').textContent = dp + '%';
+  document.getElementById('win-bar').style.width = wp + '%';
+  document.getElementById('lose-bar').style.width = lp + '%';
+  document.getElementById('draw-bar').style.width = dp + '%';
+}
+
+// --- Set Mode ---
+function toggleSetMode() {
+  setMode = document.getElementById('set-mode-toggle').checked;
+  document.getElementById('set-progress').classList.toggle('active', setMode);
+  resetGame();
+}
+
+function resetSetDots() {
+  for (let i = 0; i < 5; i++) {
+    const dot = document.getElementById('dot-' + i);
+    dot.className = 'set-dot';
+  }
+}
+
+function updateSetDot(round, result) {
+  const dot = document.getElementById('dot-' + round);
+  dot.classList.add(result);
+}
+
+function checkSetWinner() {
+  if (setMyWins >= 3) {
+    setTimeout(() => {
+      document.getElementById('set-winner-text').textContent = '🎉 승리!';
+      document.getElementById('set-score-text').textContent =
+        setMyWins + ' : ' + setAiWins + ' (' + (setRound) + '라운드)';
+      document.getElementById('set-overlay').classList.add('active');
+      launchConfetti();
+      playWinSound();
+    }, 500);
+    return true;
+  }
+  if (setAiWins >= 3) {
+    setTimeout(() => {
+      document.getElementById('set-winner-text').textContent = '😈 엘리스 승리!';
+      document.getElementById('set-score-text').textContent =
+        setAiWins + ' : ' + setMyWins + ' (' + (setRound) + '라운드)';
+      document.getElementById('set-overlay').classList.add('active');
+    }, 500);
+    return true;
+  }
+  return false;
+}
+
+function startNewSet() {
+  document.getElementById('set-overlay').classList.remove('active');
+  setRound = 0;
+  setMyWins = 0;
+  setAiWins = 0;
+  resetSetDots();
+  setButtonsDisabled(false);
+  document.getElementById('my-pick').textContent = '❓';
+  document.getElementById('ai-pick').textContent = '❓';
+  document.getElementById('result').textContent = '아래에서 선택해!';
+  document.getElementById('result').className = 'result';
+}
+
+function setButtonsDisabled(disabled) {
+  document.querySelectorAll('#choices button').forEach(b => b.disabled = disabled);
+  locked = disabled;
+}
+
+// --- Main Play ---
 function play(me) {
+  if (locked) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+
   const ai = rand(choices);
   const result = getResult(me, ai);
 
@@ -136,27 +552,61 @@ function play(me) {
 
   if (result === 'win') {
     myScore++;
+    totalWins++;
     resultEl.textContent = rand(winMsg);
     resultEl.className = 'result win';
     history.push('⭕');
+    playWinSound();
+    launchConfetti();
   } else if (result === 'lose') {
     aiScore++;
+    totalLosses++;
     resultEl.textContent = rand(loseMsg);
     resultEl.className = 'result lose';
     history.push('❌');
+    playLoseSound();
   } else {
+    totalDraws++;
     resultEl.textContent = rand(drawMsg);
     resultEl.className = 'result draw';
     history.push('➖');
+    playDrawSound();
   }
 
   document.getElementById('my-score').textContent = myScore;
   document.getElementById('ai-score').textContent = aiScore;
   document.getElementById('history').textContent = history.slice(-20).join(' ');
+  updateStats();
+
+  // Set mode logic
+  if (setMode) {
+    updateSetDot(setRound, result);
+    setRound++;
+    if (result === 'win') setMyWins++;
+    else if (result === 'lose') setAiWins++;
+
+    if (checkSetWinner()) {
+      setButtonsDisabled(true);
+    } else if (setRound >= 5) {
+      // All 5 rounds played, no 3-winner
+      setTimeout(() => {
+        const msg = setMyWins > setAiWins ? '🎉 승리!' :
+                    setAiWins > setMyWins ? '😈 엘리스 승리!' : '🤝 무승부!';
+        document.getElementById('set-winner-text').textContent = msg;
+        document.getElementById('set-score-text').textContent =
+          setMyWins + ' : ' + setAiWins + ' (5라운드)';
+        document.getElementById('set-overlay').classList.add('active');
+        if (setMyWins > setAiWins) launchConfetti();
+      }, 500);
+      setButtonsDisabled(true);
+    }
+  }
 }
 
 function resetGame() {
   myScore = 0; aiScore = 0; history = [];
+  totalWins = 0; totalLosses = 0; totalDraws = 0;
+  setRound = 0; setMyWins = 0; setAiWins = 0;
   document.getElementById('my-score').textContent = '0';
   document.getElementById('ai-score').textContent = '0';
   document.getElementById('my-pick').textContent = '❓';
@@ -164,6 +614,10 @@ function resetGame() {
   document.getElementById('result').textContent = '아래에서 선택해!';
   document.getElementById('result').className = 'result';
   document.getElementById('history').textContent = '';
+  document.getElementById('set-overlay').classList.remove('active');
+  resetSetDots();
+  updateStats();
+  setButtonsDisabled(false);
 }
 </script>
 
